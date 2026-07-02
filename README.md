@@ -1,6 +1,13 @@
-# Nauka
+# Learning
 
-A small Vite + React project.
+A small Vite + React learning project with a simple todo app.
+
+## Features
+
+- Add a new task with a name and description
+- Display tasks using the shared list component
+- Remove completed tasks from the list
+- Keep the task list centered in the UI
 
 ## Installation
 
@@ -38,6 +45,21 @@ Build the project output into `dist`:
 npm run build
 ```
 
+## Linting
+
+Check the project for lint issues:
+
+```bash
+npm run lint
+```
+
+## Project structure
+
+- `src/App.jsx` renders the main application shell
+- `src/Form.jsx` contains the task input form
+- `src/ToDo.jsx` manages the todo state and task list
+- `src/List.jsx` renders task details
+
 ## GitHub Actions
 
 A GitHub Actions workflow is configured in `.github/workflows/build-and-deploy.yml`.
@@ -45,6 +67,6 @@ It runs on push to `main`, installs dependencies, builds the app, and uploads `d
 
 ## Notes
 
-- `dist/` is generated and ignored by Git.
-- `node_modules/` is also ignored.
-- The source files live in `src/`.
+- `dist/` is generated and ignored by Git
+- `node_modules/` is also ignored
+- The source files live in `src/`

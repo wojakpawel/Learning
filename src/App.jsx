@@ -9,19 +9,18 @@ const App = () => {
   console.log("Rendering App component");
 
   return (
-    <div>
-      <header>
-        <h1>Hello World</h1>
-      </header>
-      <input
-        id="name-input"
-        type="text"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-      <p id="name-display">{`Name: ${name}`}</p>
+    <div
+      align="center"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        border: "1px solid black",
+        padding: "16px",
+        margin: "16px",
+      }}
+    >
       <Counter />
-      <List name="Nazwa" description="Opis" />
       <ToDo />
     </div>
   );
