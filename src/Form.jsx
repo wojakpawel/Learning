@@ -57,8 +57,12 @@ const Form = ({ onSubmit, teams = [], disabled = false }) => {
         rows={4}
         disabled={disabled}
       />
-      <button type="submit" disabled={disabled}>
-        Add new task
+      <button
+        type="submit"
+        disabled={disabled}
+        className={disabled ? "is-loading" : ""}
+      >
+        {disabled ? "Please wait..." : "Add new task"}
       </button>
     </form>
   );

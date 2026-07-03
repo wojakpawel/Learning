@@ -8,9 +8,14 @@ A small Vite + React learning project with a todo app backed by user accounts, t
 - Passwords stored as bcrypt hashes (never plain text)
 - JWT authentication with per-user and per-team task access
 - Create teams and invite other users by username
+- View team members on demand (collapsible member list)
+- Team owners can kick members or delete the team (team tasks are removed with the team)
+- Non-owner members can leave a team
 - Accept or reject team invitations after logging in
 - Add personal tasks or tasks scoped to a team
+- Team tasks show who created them when the creator is someone else
 - Team tasks visible to all members; only the creator or team owner can mark them complete
+- Loading feedback on async actions; layout adapts to mobile screens
 - Tasks persist in PostgreSQL and reload after login or page refresh
 
 ## Installation
@@ -89,6 +94,10 @@ This is a learning project, not production-hardened infrastructure. The codebase
   - Team tasks visible only to team members
   - Task completion enforced server-side (`403` if not creator or team owner)
   - Team invitations: only the team owner can invite; only the invitee can accept/reject
+  - Team member list: only team members can view members
+  - Kick member: team owner only; cannot kick self; pending invites for kicked user are removed
+  - Leave team: non-owner members only
+  - Delete team: owner only; cascades remove members, invitations, and team tasks
   - Team task creation requires membership (server verifies `teamId`)
 - **Request size:** JSON bodies limited to 16 KB
 - **Secrets:** `JWT_SECRET` and database credentials live in `.env` (gitignored); never commit `.env`
@@ -124,7 +133,7 @@ npm run lint
 |------|---------|
 | `src/App.jsx` | App shell, invitations, teams, and todo UI |
 | `src/Auth.jsx` | Login and register forms |
-| `src/Teams.jsx` | Create teams and send invitations |
+| `src/Teams.jsx` | Create teams; member list; owner invite/kick/delete; member leave |
 | `src/Invitations.jsx` | Accept or reject pending invitations |
 | `src/ToDo.jsx` | Task list backed by the API |
 | `src/api/` | Frontend API client and JWT storage |

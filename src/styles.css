@@ -291,3 +291,125 @@ button {
   font-size: 0.9rem;
   padding: 12px 18px;
 }
+
+.task-meta {
+  margin: 0 0 8px;
+  color: #627d98;
+  font-size: 0.9rem;
+}
+
+.team-item-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.members-toggle {
+  border: none;
+  border-radius: 999px;
+  background: #eef4ff;
+  color: #1f5bb5;
+  padding: 8px 14px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.members-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.member-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.member-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid rgba(20, 40, 81, 0.06);
+}
+
+.team-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.danger-button {
+  border: none;
+  border-radius: 999px;
+  background: #fee4e2;
+  color: #b42318;
+  padding: 10px 16px;
+  font-weight: 600;
+}
+
+button:disabled,
+button.is-loading {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+@media (max-width: 480px) {
+  #root {
+    padding: 16px 12px;
+  }
+
+  .app-shell {
+    padding: 24px 18px;
+    border-radius: 24px;
+  }
+
+  .app-shell input,
+  .app-shell textarea,
+  .app-shell select {
+    font-size: 16px;
+  }
+
+  .task-item {
+    grid-template-columns: 1fr;
+  }
+
+  .task-remove,
+  .task-locked {
+    justify-self: start;
+  }
+
+  .user-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .invitation-item {
+    grid-template-columns: 1fr;
+  }
+
+  .invitation-actions,
+  .team-actions {
+    width: 100%;
+  }
+
+  .invitation-actions button,
+  .team-actions button,
+  .invite-row button,
+  .members-toggle,
+  .app-shell button[type="submit"] {
+    min-height: 44px;
+  }
+
+  .invite-row {
+    grid-template-columns: 1fr;
+  }
+}

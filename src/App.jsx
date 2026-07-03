@@ -60,7 +60,11 @@ const App = () => {
       ) : user ? (
         <>
           <Invitations onMembershipChange={handleMembershipChange} />
-          <Teams onTeamsUpdate={setTeams} refreshKey={teamsRefreshKey} />
+          <Teams
+            onTeamsUpdate={setTeams}
+            onMembershipChange={handleMembershipChange}
+            refreshKey={teamsRefreshKey}
+          />
           <ToDo
             user={user}
             teams={teams}

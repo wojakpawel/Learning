@@ -24,17 +24,17 @@ Production CI builds the static frontend (`dist/`). Full-stack production deploy
 |------|------|
 | `App.jsx` | Auth gate; renders invitations, teams, and todo UI |
 | `Auth.jsx` | Login and register forms |
-| `Teams.jsx` | Create teams; owners invite by username |
+| `Teams.jsx` | Create teams; collapsible member list; owner invite/kick/delete; member leave |
 | `Invitations.jsx` | Pending invites; accept or reject |
-| `ToDo.jsx` | Task list with personal/team scope |
+| `ToDo.jsx` | Task list with personal/team scope and creator attribution |
 | `Form.jsx` | Task input with personal/team selector |
 | `List.jsx` | Task name and description display |
 | `api/client.js` | Shared `fetch` wrapper with JWT header |
-| `api/teams.js` | Team list, create, invite |
+| `api/teams.js` | Team list, create, invite, members, kick, leave, delete |
 | `api/invitations.js` | List, accept, reject invitations |
 | `api/tasks.js` | List, create, delete tasks |
 
-After login, pending invitations and teams load in the main shell. Tasks include a `canComplete` flag from the API; the UI hides **Done!** when the user is not allowed to complete.
+After login, pending invitations and teams load in the main shell. Tasks include `canComplete` and `showCreator` flags from the API; the UI hides **Done!** when the user is not allowed to complete and shows creator attribution only when `showCreator` is true.
 
 ## API (`server/`)
 
@@ -46,7 +46,11 @@ After login, pending invitations and teams load in the main shell. Tasks include
 | `GET /api/auth/me` | Current user (requires JWT) |
 | `POST /api/teams` | Create team (caller becomes owner + member) |
 | `GET /api/teams` | List teams the user belongs to |
+| `GET /api/teams/:teamId/members` | List team members (members only) |
 | `POST /api/teams/:teamId/invitations` | Owner invites user by username |
+| `DELETE /api/teams/:teamId/members/:userId` | Owner kicks a member |
+| `POST /api/teams/:teamId/leave` | Non-owner member leaves team |
+| `DELETE /api/teams/:teamId` | Owner deletes team (cascades tasks) |
 | `GET /api/invitations` | Pending invitations for current user |
 | `POST /api/invitations/:id/accept` | Accept invitation, join team |
 | `POST /api/invitations/:id/reject` | Reject invitation |
@@ -64,6 +68,10 @@ Auth is stateless. The frontend stores the token in `localStorage` as `authToken
 |--------|-------------------|
 | Create team | Any authenticated user |
 | Invite to team | Team owner only |
+| View team members | Team member |
+| Kick member | Team owner only (not self) |
+| Leave team | Non-owner member |
+| Delete team | Team owner only |
 | Accept/reject invitation | Invited user only |
 | Create team task | Team member |
 | View personal task | Task owner (`user_id`) |
@@ -111,12 +119,16 @@ Apply schema: `npm run db:migrate`
 
     POST   /api/teams                         { name }
     GET    /api/teams                         → [{ id, name, ownerId, isOwner }]
+    GET    /api/teams/:teamId/members         → [{ userId, username, isOwner, joinedAt }]
     POST   /api/teams/:teamId/invitations     { username }
+    DELETE /api/teams/:teamId/members/:userId
+    POST   /api/teams/:teamId/leave
+    DELETE /api/teams/:teamId
     GET    /api/invitations                   → [{ id, teamId, teamName, invitedByUsername }]
     POST   /api/invitations/:id/accept
     POST   /api/invitations/:id/reject
 
-    GET    /api/tasks   → [{ id, name, description, scope, teamId, teamName, createdByUserId, canComplete }]
+    GET    /api/tasks   → [{ id, name, description, scope, teamId, teamName, createdByUserId, createdByUsername, showCreator, canComplete }]
     POST   /api/tasks   { name, description, teamId?: null | uuid }
     DELETE /api/tasks/:id
 
