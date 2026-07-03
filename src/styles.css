@@ -117,7 +117,7 @@ button {
 .task-list {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 24px 0 0;
   display: grid;
   gap: 16px;
 }
