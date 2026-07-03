@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./styles.css";
-import Counter from "./Counter.jsx";
 import ToDo from "./ToDo.jsx";
 import Auth from "./Auth.jsx";
 import Teams from "./Teams.jsx";
@@ -54,22 +53,28 @@ const App = () => {
 
   return (
     <div className="app-shell">
-      <Counter />
       {loading ? (
         <p className="loading-message">Loading...</p>
       ) : user ? (
         <>
+          <div className="todo-panel session-panel">
+            <div className="user-bar">
+              <span>Logged in as {user.username}</span>
+              <button
+                type="button"
+                className="logout-button"
+                onClick={handleLogout}
+              >
+                Log out
+              </button>
+            </div>
+          </div>
+          <ToDo teams={teams} refreshKey={taskRefreshKey} />
           <Invitations onMembershipChange={handleMembershipChange} />
           <Teams
             onTeamsUpdate={setTeams}
             onMembershipChange={handleMembershipChange}
             refreshKey={teamsRefreshKey}
-          />
-          <ToDo
-            user={user}
-            teams={teams}
-            onLogout={handleLogout}
-            refreshKey={taskRefreshKey}
           />
         </>
       ) : (
