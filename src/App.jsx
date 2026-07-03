@@ -1,25 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import List from "./List.jsx";
+import "./styles.css";
 import Counter from "./Counter.jsx";
 import ToDo from "./ToDo.jsx";
 
 const App = () => {
   const [name, setName] = React.useState("Name goes here!");
-  console.log("Rendering App component");
 
   return (
-    <div
-      align="center"
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        border: "1px solid black",
-        padding: "16px",
-        margin: "16px",
-      }}
-    >
+    <div className="app-shell">
       <Counter />
       <ToDo />
     </div>

@@ -20,40 +20,17 @@ const ToDo = () => {
   };
 
   return (
-    <div
-      style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-    >
+    <div className="todo-panel">
       <h2>To Do</h2>
       <Form onSubmit={handleAddTask} />
-      <ul
-        style={{
-          listStyle: "none",
-          padding: 0,
-          margin: "16px 0 0",
-          width: "100%",
-          maxWidth: "420px",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
+      <ul className="task-list">
         {[...tasks.entries()].map(([taskId, task]) => (
-          <li
-            key={taskId}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "12px",
-              marginBottom: "8px",
-              width: "100%",
-            }}
-          >
+          <li key={taskId} className="task-item">
             <List name={task.name} description={task.description} />
             <button
               type="button"
               onClick={() => handleRemoveTask(taskId)}
-              style={{ border: "none", backgroundColor: "greenyellow" }}
+              className="task-remove"
             >
               Done!
             </button>
