@@ -7,7 +7,7 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run db:migrate && node --test server/smoke.test.js",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,css,html}\"",
     "lint": "eslint .",
     "dev": "vite",

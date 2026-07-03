@@ -9,7 +9,7 @@ const Invitations = ({ onMembershipChange }) => {
   const [invitations, setInvitations] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState("");
-  const [mutating, setMutating] = React.useState(false);
+  const [mutating, setMutating] = React.useState(null);
 
   const loadInvitations = React.useCallback(async () => {
     setError("");
@@ -29,7 +29,7 @@ const Invitations = ({ onMembershipChange }) => {
   }, [loadInvitations]);
 
   const handleAccept = async (invitationId) => {
-    setMutating(true);
+    setMutating({ id: invitationId, action: "accept" });
     setError("");
 
     try {
@@ -39,12 +39,12 @@ const Invitations = ({ onMembershipChange }) => {
     } catch (acceptError) {
       setError(acceptError.message);
     } finally {
-      setMutating(false);
+      setMutating(null);
     }
   };
 
   const handleReject = async (invitationId) => {
-    setMutating(true);
+    setMutating({ id: invitationId, action: "reject" });
     setError("");
 
     try {
@@ -53,13 +53,15 @@ const Invitations = ({ onMembershipChange }) => {
     } catch (rejectError) {
       setError(rejectError.message);
     } finally {
-      setMutating(false);
+      setMutating(null);
     }
   };
 
   if (loading) {
     return <p className="loading-message">Loading invitations...</p>;
   }
+
+  const isMutating = mutating !== null;
 
   return (
     <div className="todo-panel invitations-panel">
@@ -79,18 +81,24 @@ const Invitations = ({ onMembershipChange }) => {
                 <button
                   type="button"
                   className="task-remove"
-                  disabled={mutating}
+                  disabled={isMutating}
                   onClick={() => handleAccept(invitation.id)}
                 >
-                  Accept
+                  {mutating?.id === invitation.id &&
+                  mutating.action === "accept"
+                    ? "Accepting..."
+                    : "Accept"}
                 </button>
                 <button
                   type="button"
                   className="logout-button"
-                  disabled={mutating}
+                  disabled={isMutating}
                   onClick={() => handleReject(invitation.id)}
                 >
-                  Reject
+                  {mutating?.id === invitation.id &&
+                  mutating.action === "reject"
+                    ? "Rejecting..."
+                    : "Reject"}
                 </button>
               </div>
             </li>

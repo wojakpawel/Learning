@@ -20,6 +20,8 @@ function mapTaskRow(row, userId) {
     teamId: row.team_id,
     teamName: row.team_name ?? null,
     createdByUserId: row.created_by_user_id,
+    createdByUsername: row.creator_username ?? null,
+    showCreator: row.created_by_user_id !== userId,
     canComplete: canCompleteTask(row, userId, row.team_owner_id ?? null),
   };
 }

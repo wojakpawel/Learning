@@ -9,9 +9,11 @@ router.get("/", async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT t.id, t.name, t.description, t.team_id, t.created_by_user_id,
-              teams.name AS team_name, teams.owner_id AS team_owner_id
+              teams.name AS team_name, teams.owner_id AS team_owner_id,
+              creator.username AS creator_username
        FROM tasks t
        LEFT JOIN teams ON teams.id = t.team_id
+       INNER JOIN users creator ON creator.id = t.created_by_user_id
        WHERE (t.team_id IS NULL AND t.user_id = $1)
           OR (t.team_id IN (
             SELECT team_id FROM team_members WHERE user_id = $1
@@ -55,8 +57,11 @@ router.post("/", async (req, res) => {
       );
 
       const teamResult = await pool.query(
-        `SELECT name, owner_id FROM teams WHERE id = $1`,
-        [teamId],
+        `SELECT t.name, t.owner_id, u.username AS creator_username
+         FROM teams t
+         INNER JOIN users u ON u.id = $2
+         WHERE t.id = $1`,
+        [teamId, req.userId],
       );
       const team = teamResult.rows[0];
 
@@ -64,6 +69,7 @@ router.post("/", async (req, res) => {
         ...result.rows[0],
         team_name: team.name,
         team_owner_id: team.owner_id,
+        creator_username: team.creator_username,
       };
 
       return res.status(201).json(mapTaskRow(row, req.userId));
@@ -76,7 +82,17 @@ router.post("/", async (req, res) => {
       [req.userId, req.userId, name, description],
     );
 
-    return res.status(201).json(mapTaskRow(result.rows[0], req.userId));
+    const userResult = await pool.query(
+      `SELECT username FROM users WHERE id = $1`,
+      [req.userId],
+    );
+
+    const row = {
+      ...result.rows[0],
+      creator_username: userResult.rows[0].username,
+    };
+
+    return res.status(201).json(mapTaskRow(row, req.userId));
   } catch (error) {
     console.error("Create task failed:", error);
     return res.status(500).json({ error: "Failed to create task." });

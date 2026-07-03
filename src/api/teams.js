@@ -17,3 +17,25 @@ export function inviteToTeam(teamId, username) {
     body: JSON.stringify({ username }),
   });
 }
+
+export function listTeamMembers(teamId) {
+  return api(`/api/teams/${teamId}/members`);
+}
+
+export function kickMember(teamId, userId) {
+  return api(`/api/teams/${teamId}/members/${userId}`, {
+    method: "DELETE",
+  });
+}
+
+export function leaveTeam(teamId) {
+  return api(`/api/teams/${teamId}/leave`, {
+    method: "POST",
+  });
+}
+
+export function deleteTeam(teamId) {
+  return api(`/api/teams/${teamId}`, {
+    method: "DELETE",
+  });
+}

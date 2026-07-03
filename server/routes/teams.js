@@ -81,6 +81,134 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/:teamId/members", async (req, res) => {
+  const { teamId } = req.params;
+
+  try {
+    if (!(await isTeamMember(teamId, req.userId))) {
+      return res.status(404).json({ error: "Team not found." });
+    }
+
+    const result = await pool.query(
+      `SELECT u.id, u.username, tm.joined_at, (t.owner_id = u.id) AS is_owner
+       FROM team_members tm
+       INNER JOIN users u ON u.id = tm.user_id
+       INNER JOIN teams t ON t.id = tm.team_id
+       WHERE tm.team_id = $1
+       ORDER BY is_owner DESC, tm.joined_at ASC`,
+      [teamId],
+    );
+
+    return res.json(
+      result.rows.map((row) => ({
+        userId: row.id,
+        username: row.username,
+        isOwner: row.is_owner,
+        joinedAt: row.joined_at,
+      })),
+    );
+  } catch (error) {
+    console.error("List team members failed:", error);
+    return res.status(500).json({ error: "Failed to load team members." });
+  }
+});
+
+router.delete("/:teamId/members/:userId", async (req, res) => {
+  const { teamId, userId: targetUserId } = req.params;
+
+  try {
+    if (!(await isTeamOwner(teamId, req.userId))) {
+      return res
+        .status(403)
+        .json({ error: "Only the team owner can remove members." });
+    }
+
+    if (targetUserId === req.userId) {
+      return res.status(400).json({
+        error: "You cannot remove yourself. Delete the team instead.",
+      });
+    }
+
+    if (!(await isTeamMember(teamId, targetUserId))) {
+      return res.status(404).json({ error: "Member not found." });
+    }
+
+    const client = await pool.connect();
+
+    try {
+      await client.query("BEGIN");
+
+      await client.query(
+        `DELETE FROM team_invitations
+         WHERE team_id = $1 AND invited_user_id = $2 AND status = 'pending'`,
+        [teamId, targetUserId],
+      );
+
+      await client.query(
+        `DELETE FROM team_members WHERE team_id = $1 AND user_id = $2`,
+        [teamId, targetUserId],
+      );
+
+      await client.query("COMMIT");
+      return res.status(204).send();
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error("Kick member failed:", error);
+    return res.status(500).json({ error: "Failed to remove member." });
+  }
+});
+
+router.post("/:teamId/leave", async (req, res) => {
+  const { teamId } = req.params;
+
+  try {
+    if (!(await isTeamMember(teamId, req.userId))) {
+      return res.status(404).json({ error: "Team not found." });
+    }
+
+    if (await isTeamOwner(teamId, req.userId)) {
+      return res.status(403).json({
+        error: "Team owner cannot leave. Delete the team instead.",
+      });
+    }
+
+    await pool.query(
+      `DELETE FROM team_members WHERE team_id = $1 AND user_id = $2`,
+      [teamId, req.userId],
+    );
+
+    return res.status(204).send();
+  } catch (error) {
+    console.error("Leave team failed:", error);
+    return res.status(500).json({ error: "Failed to leave team." });
+  }
+});
+
+router.delete("/:teamId", async (req, res) => {
+  const { teamId } = req.params;
+
+  try {
+    const result = await pool.query(
+      `DELETE FROM teams WHERE id = $1 AND owner_id = $2`,
+      [teamId, req.userId],
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Team not found." });
+    }
+
+    return res.status(204).send();
+  } catch (error) {
+    console.error("Delete team failed:", error);
+    return res.status(500).json({ error: "Failed to delete team." });
+  }
+});
+
 router.post("/:teamId/invitations", async (req, res) => {
   const { teamId } = req.params;
   const username =

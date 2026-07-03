@@ -86,6 +86,11 @@ const ToDo = ({ user, teams, onLogout, refreshKey }) => {
                 {task.scope === "team" ? (
                   <span className="team-badge">Team: {task.teamName}</span>
                 ) : null}
+                {task.showCreator ? (
+                  <p className="task-meta">
+                    Created by {task.createdByUsername}
+                  </p>
+                ) : null}
                 <List name={task.name} description={task.description} />
               </div>
               {task.canComplete ? (
