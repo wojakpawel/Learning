@@ -3,7 +3,7 @@ import Form from "./Form.jsx";
 import List from "./List.jsx";
 import { createTask, deleteTask, listTasks } from "./api/tasks.js";
 
-const ToDo = ({ user, teams, onLogout, refreshKey }) => {
+const ToDo = ({ teams, refreshKey }) => {
   const [tasks, setTasks] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState("");
@@ -58,63 +58,60 @@ const ToDo = ({ user, teams, onLogout, refreshKey }) => {
   };
 
   return (
-    <div className="todo-panel">
-      <div className="todo-header">
-        <h2>To Do</h2>
-        <div className="user-bar">
-          <span>Logged in as {user.username}</span>
-          <button type="button" className="logout-button" onClick={onLogout}>
-            Log out
-          </button>
-        </div>
+    <>
+      <div className="todo-panel task-creator-panel">
+        <h2>New task</h2>
+        <Form
+          onSubmit={handleAddTask}
+          teams={teams}
+          disabled={loading || mutating}
+        />
+        {error ? <p className="form-error">{error}</p> : null}
       </div>
-      <Form
-        onSubmit={handleAddTask}
-        teams={teams}
-        disabled={loading || mutating}
-      />
-      {error ? <p className="form-error">{error}</p> : null}
-      {loading ? (
-        <p className="loading-message">Loading tasks...</p>
-      ) : tasks.length === 0 ? (
-        <p className="no-tasks">No tasks yet. Add your first one above.</p>
-      ) : (
-        <ul className="task-list">
-          {tasks.map((task) => (
-            <li key={task.id} className="task-item">
-              <div className="task-card">
-                {task.scope === "team" ? (
-                  <span className="team-badge">Team: {task.teamName}</span>
-                ) : null}
-                {task.showCreator ? (
-                  <p className="task-meta">
-                    Created by {task.createdByUsername}
-                  </p>
-                ) : null}
-                <List name={task.name} description={task.description} />
-              </div>
-              {task.canComplete ? (
-                <button
-                  type="button"
-                  onClick={() => handleRemoveTask(task.id)}
-                  className="task-remove"
-                  disabled={mutating}
-                >
-                  Done!
-                </button>
-              ) : (
-                <span
-                  className="task-locked"
-                  title="Only the creator or team owner can complete this task"
-                >
-                  Locked
-                </span>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+      <div className="todo-panel task-list-panel">
+        <h2>Tasks</h2>
+        {loading ? (
+          <p className="loading-message">Loading tasks...</p>
+        ) : tasks.length === 0 ? (
+          <p className="no-tasks">No tasks yet. Add your first one above.</p>
+        ) : (
+          <ul className="task-list">
+            {tasks.map((task) => (
+              <li key={task.id} className="task-item">
+                <div className="task-card">
+                  {task.scope === "team" ? (
+                    <span className="team-badge">Team: {task.teamName}</span>
+                  ) : null}
+                  {task.showCreator ? (
+                    <p className="task-meta">
+                      Created by {task.createdByUsername}
+                    </p>
+                  ) : null}
+                  <List name={task.name} description={task.description} />
+                </div>
+                {task.canComplete ? (
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveTask(task.id)}
+                    className="task-remove"
+                    disabled={mutating}
+                  >
+                    Done!
+                  </button>
+                ) : (
+                  <span
+                    className="task-locked"
+                    title="Only the creator or team owner can complete this task"
+                  >
+                    Locked
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </>
   );
 };
 

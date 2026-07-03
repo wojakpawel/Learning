@@ -119,7 +119,7 @@ button {
 .task-list {
   list-style: none;
   padding: 0;
-  margin: 24px 0 0;
+  margin: 0;
   display: grid;
   gap: 16px;
 }
@@ -173,6 +173,11 @@ button {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.session-panel {
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 
 .user-bar {
