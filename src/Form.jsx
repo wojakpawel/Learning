@@ -22,11 +22,13 @@ const Form = ({ onSubmit }) => {
     <form onSubmit={handleSubmit}>
       <input
         type="text"
+        id="task-name-input"
         value={taskName}
         onChange={(event) => setTaskName(event.target.value)}
         placeholder="Enter task name"
       />
       <textarea
+        id="task-description-input"
         value={taskDescription}
         onChange={(event) => setTaskDescription(event.target.value)}
         placeholder="Enter task description"
