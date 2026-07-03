@@ -1,14 +1,20 @@
 # Agent map
 
-Vite + React learning project with a full-stack todo app: Express API, PostgreSQL, JWT auth, and per-user persisted tasks.
+Vite + React learning project with a full-stack todo app: Express API, PostgreSQL, JWT auth, teams, and per-user persisted tasks.
 
 ## Start here
 
 1. `README.md` — setup, scripts, security notes
 2. `docs/ARCHITECTURE.md` — system boundaries, API contract, auth flow
-3. `server/routes/` — auth and task handlers
-4. `src/ToDo.jsx` — task UI wired to the API
-5. `docs/exec-plans/create-plan-file.md` — how to write execution plans for multi-step work
+3. `docs/core-beliefs.md` — non-negotiable design rules for this repo
+4. `server/app.js` — Express app wiring (used by `server/index.js` and smoke tests)
+5. `server/routes/` — route handlers:
+   - `auth.js` — register, login, current user
+   - `tasks.js` — personal and team tasks
+   - `teams.js` — create/list teams, members, invite, kick, leave, delete
+   - `invitations.js` — list, accept, reject invitations
+6. `src/ToDo.jsx` — task UI wired to the API
+7. `docs/exec-plans/create-plan-file.md` — how to write execution plans for multi-step work
 
 ## Hard constraints
 
@@ -23,9 +29,12 @@ Vite + React learning project with a full-stack todo app: Express API, PostgreSQ
 ## Verify changes
 
     npm run lint
+    npm run test
     npm run build
     npm run dev:all
     # Register, add a task, refresh — task should persist
+
+`npm run test` requires PostgreSQL on port 5432 (same as `dev:all`). It runs migrations then the API smoke test in `server/smoke.test.js`.
 
 If native install scripts are blocked on first run:
 
@@ -37,6 +46,7 @@ Update docs in the **same change** when you touch:
 
 - **User-facing behavior or setup** → `README.md`
 - **Architecture, API contracts, auth, or database** → `docs/ARCHITECTURE.md`
+- **Stable project principles** → `docs/core-beliefs.md`
 - **Agent entry points or verification commands** → this file (`AGENTS.md`)
 
 Do not link canonical docs to active or completed execution plans. Plans may reference docs; docs stay stable as plans are archived.

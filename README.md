@@ -127,6 +127,18 @@ Full-stack production deployment is not configured yet; CI builds and uploads th
 npm run lint
 ```
 
+## Testing
+
+API smoke test (requires PostgreSQL on port 5432):
+
+```bash
+npm run test
+```
+
+Runs `db:migrate` then `server/smoke.test.js` using Node's built-in test runner. The smoke test covers register, team create, invite/accept, member list, team tasks with creator attribution, leave, and team delete with task cascade.
+
+CI runs `npm run test` on push to `main`.
+
 ## Project structure
 
 | Path | Purpose |
@@ -138,14 +150,18 @@ npm run lint
 | `src/ToDo.jsx` | Task list backed by the API |
 | `src/api/` | Frontend API client and JWT storage |
 | `server/` | Express API, JWT auth, PostgreSQL access |
+| `server/smoke.test.js` | API smoke test (register → teams → tasks) |
 | `scripts/start-postgres.mjs` | Embedded PostgreSQL for local dev |
 | `docs/ARCHITECTURE.md` | System design and API contract |
+| `docs/core-beliefs.md` | Non-negotiable design rules |
 | `AGENTS.md` | Agent entry map and doc rules |
 
 ## npm scripts
 
 | Script | Description |
 |--------|-------------|
+| `npm run lint` | ESLint |
+| `npm run test` | Migrate DB and run API smoke test |
 | `npm run dev:all` | Start DB, migrate, API, and Vite together |
 | `npm run dev:api` | Wait for Postgres, migrate, start API |
 | `npm run dev:web` | Wait for Postgres, start Vite |

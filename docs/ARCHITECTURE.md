@@ -38,6 +38,16 @@ After login, pending invitations and teams load in the main shell. Tasks include
 
 ## API (`server/`)
 
+| File | Role |
+|------|------|
+| `app.js` | Express app (shared by `index.js` and smoke tests) |
+| `index.js` | Starts the HTTP listener |
+| `smoke.test.js` | API smoke test |
+| `routes/auth.js` | Register, login, current user |
+| `routes/tasks.js` | Personal and team tasks |
+| `routes/teams.js` | Teams, members, invitations, kick, leave, delete |
+| `routes/invitations.js` | Accept and reject invitations |
+
 | Route | Purpose |
 |-------|---------|
 | `GET /api/health` | Liveness check |
@@ -115,6 +125,18 @@ Default connection string:
 
 Apply schema: `npm run db:migrate`
 
+## Testing
+
+`npm run test` migrates the database and runs `server/smoke.test.js` with Node's built-in test runner. The test spins up the Express app on a random port (no separate `dev:server` needed) and exercises:
+
+- health check
+- register two users
+- create team, list members, invite and accept
+- create team task; verify `showCreator` for the non-creator
+- member leave; owner delete team; verify tasks are gone
+
+Requires PostgreSQL (same `DATABASE_URL` as local dev). CI runs this on push to `main`.
+
 ## HTTP API contract
 
     POST   /api/teams                         { name }
@@ -145,4 +167,4 @@ Apply schema: `npm run db:migrate`
 
 ## CI
 
-GitHub Actions starts PostgreSQL, runs migrations, boots the API, lints, builds the frontend, and uploads `dist`.
+GitHub Actions starts PostgreSQL, runs migrations, runs `npm run test`, lints, builds the frontend, and uploads `dist`.
